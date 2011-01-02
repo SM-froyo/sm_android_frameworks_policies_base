@@ -458,6 +458,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     };
 
+    Runnable mDpadCenterLongPress = new Runnable() {
+        public void run() {
+            if (!isMusicActive()) {
+                sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+            }
+        }
+    };
+
     void showGlobalActionsDialog() {
         if (mGlobalActions == null) {
             mGlobalActions = new GlobalActions(mContext);
@@ -2220,6 +2228,27 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     } catch (RemoteException ex) {
                         Log.w(TAG, "VOLUME button: RemoteException from getPhoneInterface()", ex);
                     }
+                }
+            } else if (down && keyguardActive && isMovementKeyTi(code) && isMusicActive()) {
+                switch (code) {
+                    case KeyEvent.KEYCODE_DPAD_UP:
+                        handleVolumeKey(AudioManager.STREAM_MUSIC, KeyEvent.KEYCODE_VOLUME_UP);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_DOWN:
+                        handleVolumeKey(AudioManager.STREAM_MUSIC, KeyEvent.KEYCODE_VOLUME_DOWN);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
+                        break;
+                }
+            } else if (keyguardActive && code == KeyEvent.KEYCODE_DPAD_CENTER) {
+                if (down) {
+                    mHandler.postDelayed(mDpadCenterLongPress, ViewConfiguration.getGlobalActionKeyTimeout());
+                } else {
+                    mHandler.removeCallbacks(mDpadCenterLongPress);
                 }
             } else if (code == KeyEvent.KEYCODE_HOLD) {
                 result = ACTION_PASS_TO_USER;
