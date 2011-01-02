@@ -516,7 +516,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (keyCode == KeyEvent.KEYCODE_HOLD) {
             if (!mHoldPressed) {
                 mHoldPressed = true;
-                mHandler.postDelayed(mHoldCallback, 1000);
+                mHandler.postDelayed(mHoldCallback, 400);
             }
         }
         return false;
