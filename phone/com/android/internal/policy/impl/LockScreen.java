@@ -506,6 +506,27 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
     };
 
+    boolean mDpadPressed;
+
+    Runnable mDpadCenterLongPress = new Runnable() {
+        public void run() {
+            mCallback.pokeWakelock();
+            refreshMusicStatus();
+            if(!am.isMusicActive()) {
+                mPauseIcon.setVisibility(View.VISIBLE);
+                mPlayIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.VISIBLE);
+                mForwardIcon.setVisibility(View.VISIBLE);
+            } else {
+                mPlayIcon.setVisibility(View.VISIBLE);
+                mPauseIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.GONE);
+                mForwardIcon.setVisibility(View.GONE);
+            }
+            sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
+        }
+    };
+
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
     if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen) ||
@@ -519,6 +540,21 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mHandler.postDelayed(mHoldCallback, 400);
             }
         }
+        if ((mWasMusicActive || mLockAlwaysMusic || am.isMusicActive()) && (mLockMusicControls)) {
+            if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && !mDpadPressed) {
+                mDpadPressed = true;
+                mHandler.postDelayed(mDpadCenterLongPress, 400);
+            } else if (am.isMusicActive()) {
+                switch (keyCode) {
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
+                        break;
+                }
+            }
+        }
         return false;
     }
 
@@ -529,6 +565,9 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mHandler.removeCallbacks(mHoldCallback);
                 mHoldPressed = false;
             }
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mDpadPressed) {
+            mHandler.removeCallbacks(mDpadCenterLongPress);
+            mDpadPressed = false;
         }
         return false;
     }
