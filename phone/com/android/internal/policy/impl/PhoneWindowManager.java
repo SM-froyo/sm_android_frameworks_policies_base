@@ -1960,6 +1960,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
         return false;    
     }
+
+    private boolean mWasMusicActive = false;
  
     /** {@inheritDoc} */
     public int interceptKeyTq(RawInputEvent event, boolean screenIsOn) {
@@ -2229,8 +2231,17 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     case KeyEvent.KEYCODE_DPAD_DOWN:
                         handleVolumeKey(AudioManager.STREAM_MUSIC, KeyEvent.KEYCODE_VOLUME_DOWN);
                         break;
+                    case KeyEvent.KEYCODE_DPAD_LEFT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PREVIOUS);
+                        break;
+                    case KeyEvent.KEYCODE_DPAD_RIGHT:
+                        sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_NEXT);
+                        break;
                 }
-            } else if (down && keyguardActive && code == KeyEvent.KEYCODE_DPAD_CENTER) {
+            } else if (down && keyguardActive && code == KeyEvent.KEYCODE_DPAD_CENTER
+                    && (mWasMusicActive || isMusicActive())) {
+                mWasMusicActive = true;
+                sendMediaButtonEvent(KeyEvent.KEYCODE_MEDIA_PLAY_PAUSE);
                 result = ACTION_PASS_TO_USER;
             } else if (code == KeyEvent.KEYCODE_HOLD) {
                 result = ACTION_PASS_TO_USER;
@@ -2320,6 +2331,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         } else if (keycode == KeyEvent.KEYCODE_HOLD) {
             flags |= WindowManagerPolicy.FLAG_WAKE;
         }
+        if ((!mTrackballWakeScreen && keycode == KeyEvent.KEYCODE_DPAD_CENTER) || isMovementKeyTi(keycode)) {
+            flags &= ~WindowManagerPolicy.FLAG_WAKE;
+        }
         return (flags
                 & (WindowManagerPolicy.FLAG_WAKE | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0;
     }
@@ -2332,6 +2346,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mScreenOn = false;
             updateOrientationListenerLp();
             updateLockScreenTimeout();
+            if (!mKeyguardMediator.isShowing()) {
+                mWasMusicActive = isMusicActive();
+            }
         }
     }
 
