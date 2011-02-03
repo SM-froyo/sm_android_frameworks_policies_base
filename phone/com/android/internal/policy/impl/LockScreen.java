@@ -520,7 +520,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mLockMusicControls
                 && (mWasMusicActive || mLockAlwaysMusic || mIsMusicActive)) {
-            refreshMusicStatus();
+            if(am.isMusicActive()) {
+                mPauseIcon.setVisibility(View.GONE);
+                mPlayIcon.setVisibility(View.VISIBLE);
+                mRewindIcon.setVisibility(View.GONE);
+                mForwardIcon.setVisibility(View.GONE);
+            } else {
+                mPauseIcon.setVisibility(View.VISIBLE);
+                mPlayIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.VISIBLE);
+                mForwardIcon.setVisibility(View.VISIBLE);
+            }
         }
         return false;
     }
@@ -680,23 +690,17 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     }
     private void refreshMusicStatus() {
         if ((mWasMusicActive || mIsMusicActive || mLockAlwaysMusic) && (mLockMusicControls)) {
-            mHandler.postDelayed(
-                new Runnable() {
-                    public void run() {
-                        if(am.isMusicActive()) {
-                            mPauseIcon.setVisibility(View.VISIBLE);
-                            mPlayIcon.setVisibility(View.GONE);
-                            mRewindIcon.setVisibility(View.VISIBLE);
-                            mForwardIcon.setVisibility(View.VISIBLE);
-                        } else {
-                            mPlayIcon.setVisibility(View.VISIBLE);
-                            mPauseIcon.setVisibility(View.GONE);
-                            mRewindIcon.setVisibility(View.GONE);
-                            mForwardIcon.setVisibility(View.GONE);
-                        }
-                    }
-                }
-            , 200);
+            if(am.isMusicActive()) {
+                mPauseIcon.setVisibility(View.VISIBLE);
+                mPlayIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.VISIBLE);
+                mForwardIcon.setVisibility(View.VISIBLE);
+            } else {
+                mPlayIcon.setVisibility(View.VISIBLE);
+                mPauseIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.GONE);
+                mForwardIcon.setVisibility(View.GONE);
+            }
         } else {
             mPlayIcon.setVisibility(View.GONE);
             mPauseIcon.setVisibility(View.GONE);
