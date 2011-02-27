@@ -133,8 +133,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
          Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
     private boolean mDpadMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_DPAD_MUSIC_CONTROLS, 1) == 1);
-    private boolean mDpadAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
-         Settings.System.LOCKSCREEN_DPAD_ALWAYS_MUSIC_CONTROLS, 0) == 1);
     private boolean mLockPhoneMessagingTab = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_PHONE_MESSAGING_TAB, 0) == 1);
     private String mMessagingTabApp = (Settings.System.getString(mContext.getContentResolver(),

@@ -289,7 +289,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
 
     // D-Pad Music Controls
     boolean mDpadMusicControls;
-    boolean mDpadAlwaysMusic;
 
     ShortcutManager mShortcutManager;
     PowerManager.WakeLock mBroadcastWakeLock;
@@ -680,8 +679,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     "fancy_rotation_anim", 0) != 0 ? 0x80 : 0;
             mDpadMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.LOCKSCREEN_DPAD_MUSIC_CONTROLS, 1) == 1);
-            mDpadAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
-                    Settings.System.LOCKSCREEN_DPAD_ALWAYS_MUSIC_CONTROLS, 0) == 1);
             int accelerometerDefault = Settings.System.getInt(resolver,
                     Settings.System.ACCELEROMETER_ROTATION, DEFAULT_ACCELEROMETER_ROTATION);
             if (mAccelerometerDefault != accelerometerDefault) {
@@ -2196,7 +2193,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     }
                 }
             } else if (down && keyguardActive && isMovementKeyTi(code) && mDpadMusicControls && 
-                    (isMusicActive() || mWasMusicActive || mDpadAlwaysMusic )) {
+                    (isMusicActive() || mWasMusicActive)) {
                 switch (code) {
                     case KeyEvent.KEYCODE_DPAD_UP:
                         handleVolumeKey(AudioManager.STREAM_MUSIC, KeyEvent.KEYCODE_VOLUME_UP);
