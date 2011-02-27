@@ -518,7 +518,20 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (keyCode == KeyEvent.KEYCODE_HOLD && mHoldUnlockEnabled) {
             if (!mHoldPressed) {
                 mHoldPressed = true;
-                mHandler.postDelayed(mHoldCallback, 1000);
+                mHandler.postDelayed(mHoldCallback, 400);
+            }
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mLockMusicControls
+                && (mWasMusicActive || mLockAlwaysMusic || mIsMusicActive)) {
+            if(am.isMusicActive()) {
+                mPauseIcon.setVisibility(View.GONE);
+                mPlayIcon.setVisibility(View.VISIBLE);
+                mRewindIcon.setVisibility(View.GONE);
+                mForwardIcon.setVisibility(View.GONE);
+            } else {
+                mPauseIcon.setVisibility(View.VISIBLE);
+                mPlayIcon.setVisibility(View.GONE);
+                mRewindIcon.setVisibility(View.VISIBLE);
+                mForwardIcon.setVisibility(View.VISIBLE);
             }
         }
         return false;
