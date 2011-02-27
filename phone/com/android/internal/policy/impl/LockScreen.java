@@ -123,8 +123,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mEnableMenuKeyInLockScreen;
     private static boolean mShowSpnPref;
     private static boolean mShowPlmnPref;
-    private boolean mTrackballUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(),
-         Settings.System.TRACKBALL_UNLOCK_SCREEN, 0) == 1);
     private boolean mMenuUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.MENU_UNLOCK_SCREEN, 0) == 1);
     private boolean mHoldUnlockEnabled = (Settings.System.getInt(mContext.getContentResolver(),
@@ -134,7 +132,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
     private boolean mDpadMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
-         Settings.System.LOCKSCREEN_DPAD_MUSIC_CONTROLS, 0) == 1);
+         Settings.System.LOCKSCREEN_DPAD_MUSIC_CONTROLS, 1) == 1);
     private boolean mLockPhoneMessagingTab = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_PHONE_MESSAGING_TAB, 0) == 1);
     private String mMessagingTabApp = (Settings.System.getString(mContext.getContentResolver(),
@@ -454,7 +452,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
         // Safety check in case our preferences in CMParts for hiding the unlock tab don't properly update
         // system settings... ALWAYS provide a way to unlock the phone
-        if (prefHideUnlockTab && (GestureCanUnlock ||  mMenuUnlockScreen || mHoldUnlockEnabled)) {
+        if (prefHideUnlockTab && (GestureCanUnlock ||  mMenuUnlockScreen)) {
             mHideUnlockTab = true;
         } else {
             mHideUnlockTab = false;
@@ -519,10 +517,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         if (keyCode == KeyEvent.KEYCODE_HOLD && mHoldUnlockEnabled) {
             if (!mHoldPressed) {
                 mHoldPressed = true;
-                mHandler.postDelayed(mHoldCallback, 1000);
+                mHandler.postDelayed(mHoldCallback, 400);
             }
         } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mDpadMusicControls
-                && (mWasMusicActive || mIsMusicActive) && mLockMusicControls) {
+                && (mWasMusicActive || mDpadAlwaysMusic || mIsMusicActive)) {
             if(am.isMusicActive()) {
                 mPauseIcon.setVisibility(View.GONE);
                 mPlayIcon.setVisibility(View.VISIBLE);

@@ -276,6 +276,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     // Behavior of ENDCALL Button.  (See Settings.System.END_BUTTON_BEHAVIOR.)
     int mEndcallBehavior;
 
+
     // Behavior of POWER button while in-call and screen on.
     // (See Settings.Secure.INCALL_POWER_BUTTON_BEHAVIOR.)
     int mIncallPowerBehavior;
@@ -2001,8 +2002,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                                 || event.keycode == KeyEvent.KEYCODE_VOLUME_UP)) {
                         handleVolumeKeyDown(event.keycode);
                     }
-                }
-                else if (isWakeKey && isKeyUp) {
+                }else if (isWakeKey && isKeyUp) {
                     if (!mKeyguardMediator.onWakeKeyWhenKeyguardShowingTq(event.keycode)
                             && (event.keycode == KeyEvent.KEYCODE_VOLUME_DOWN
                                     || event.keycode == KeyEvent.KEYCODE_VOLUME_UP)) {
@@ -2290,8 +2290,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
      * Given the current state of the world, should this key wake up the device?
      */
     protected boolean isWakeKeyTq(RawInputEvent event) {
-        // There are not key maps for trackball devices, but we'd still
-        // like to have pressing it wake the device up, so force it here.
         int keycode = event.keycode;
         int scancode = event.scancode;
         int flags = event.flags;
@@ -2299,7 +2297,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             flags |= WindowManagerPolicy.FLAG_WAKE;
         }
         if ((keycode == KeyEvent.KEYCODE_DPAD_CENTER) || isMovementKeyTi(keycode)) {
-            flags |= WindowManagerPolicy.FLAG_WAKE;
+            flags &= ~WindowManagerPolicy.FLAG_WAKE;
         }
         return (flags
                 & (WindowManagerPolicy.FLAG_WAKE | WindowManagerPolicy.FLAG_WAKE_DROPPED)) != 0;
