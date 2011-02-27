@@ -123,8 +123,6 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
     private boolean mEnableMenuKeyInLockScreen;
     private static boolean mShowSpnPref;
     private static boolean mShowPlmnPref;
-    private boolean mTrackballUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(),
-         Settings.System.TRACKBALL_UNLOCK_SCREEN, 0) == 1);
     private boolean mMenuUnlockScreen = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.MENU_UNLOCK_SCREEN, 0) == 1);
     private boolean mHoldUnlockEnabled = (Settings.System.getInt(mContext.getContentResolver(),
@@ -133,6 +131,10 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
          Settings.System.LOCKSCREEN_MUSIC_CONTROLS, 1) == 1);
     private boolean mLockAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_ALWAYS_MUSIC_CONTROLS, 0) == 1);
+    private boolean mDpadMusicControls = (Settings.System.getInt(mContext.getContentResolver(),
+         Settings.System.LOCKSCREEN_DPAD_MUSIC_CONTROLS, 1) == 1);
+    private boolean mDpadAlwaysMusic = (Settings.System.getInt(mContext.getContentResolver(),
+         Settings.System.LOCKSCREEN_DPAD_ALWAYS_MUSIC_CONTROLS, 0) == 1);
     private boolean mLockPhoneMessagingTab = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_PHONE_MESSAGING_TAB, 0) == 1);
     private String mMessagingTabApp = (Settings.System.getString(mContext.getContentResolver(),
@@ -452,7 +454,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
         }
         // Safety check in case our preferences in CMParts for hiding the unlock tab don't properly update
         // system settings... ALWAYS provide a way to unlock the phone
-        if (prefHideUnlockTab && (GestureCanUnlock || mTrackballUnlockScreen || mMenuUnlockScreen)) {
+        if (prefHideUnlockTab && (GestureCanUnlock ||  mMenuUnlockScreen)) {
             mHideUnlockTab = true;
         } else {
             mHideUnlockTab = false;
@@ -510,8 +512,7 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-    if ((keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mTrackballUnlockScreen) ||
-        (keyCode == KeyEvent.KEYCODE_MENU && mMenuUnlockScreen) ||
+    if ((keyCode == KeyEvent.KEYCODE_MENU && mMenuUnlockScreen) ||
         (keyCode == KeyEvent.KEYCODE_MENU && mEnableMenuKeyInLockScreen)) {
             mCallback.goToUnlockScreen();
         }
@@ -520,8 +521,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
                 mHoldPressed = true;
                 mHandler.postDelayed(mHoldCallback, 400);
             }
-        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mLockMusicControls
-                && (mWasMusicActive || mLockAlwaysMusic || mIsMusicActive)) {
+        } else if (keyCode == KeyEvent.KEYCODE_DPAD_CENTER && mDpadMusicControls
+                && (mWasMusicActive || mDpadAlwaysMusic || mIsMusicActive)) {
             if(am.isMusicActive()) {
                 mPauseIcon.setVisibility(View.GONE);
                 mPlayIcon.setVisibility(View.VISIBLE);
