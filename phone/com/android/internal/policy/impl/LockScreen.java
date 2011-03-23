@@ -155,6 +155,8 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
             Settings.System.LOCKSCREEN_ROTARY_HIDE_ARROWS, 0) == 1);
     private int mLockscreenMode = (Settings.System.getInt(mContext.getContentResolver(),
          Settings.System.LOCKSCREEN_MODE, 1));
+    private boolean mLockscreenVibrate = (Settings.System.getInt(mContext.getContentResolver(),
+         Settings.System.LOCKSCREEN_VIBRATE, 1) == 1);
     private boolean mUseRotaryLockscreen = (mLockscreenMode == 2);
     private double mGestureSensitivity;
     private boolean mGestureTrail;
@@ -356,6 +358,12 @@ class LockScreen extends LinearLayout implements KeyguardScreen, KeyguardUpdateM
 
         mAudioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
         mSilentMode = isSilentMode();
+
+        if (!mLockscreenVibrate) {
+            mTabSelector.enableVibrate(false);
+            mRotarySelector.enableVibrate(false);
+            mSelector2.enableVibrate(false);
+        }
 
         //Rotary setup
         if(!mRotaryUnlockDown){
